@@ -1,8 +1,8 @@
-import { IsString, Matches, MaxLength, ValidationArguments } from "class-validator";
+import { IsString, Matches, MaxLength } from "class-validator";
 
 export class Convert {
     @IsString()
-    @Matches(/^[1-9]\d+$/, { message: 'solo números positivos en el monto'})
+    @Matches(/^[1-9]\d+$/, { message: 'solo números positivos y enteros en el monto'})
     readonly amount: string
 
     @IsString()
