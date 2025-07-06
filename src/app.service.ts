@@ -66,13 +66,18 @@ export class AppService {
     return this.daysUntilBirthday(now, birthdayThisYear);
   }
 
-  getAllRindegastinosDays(){
-    const data = this.dbservice.getAll();
-    console.log(data);
-  }
-
   private daysUntilBirthday(dateFrom, dateTo): string{
     const days = dateTo.diff(dateFrom, 'day');
     return `Faltan ${days} dias para tu rindegastoCumpleaños`;
+  }
+
+  getAllRindegastinosDays(){
+    const data = this.dbservice.getAll();
+
+    const list = data.map(a => {
+      var days = this.getDaytoBirthday({birthdate: a['birthday']});
+      return {...a,days}
+    });
+    return list;
   }
 }

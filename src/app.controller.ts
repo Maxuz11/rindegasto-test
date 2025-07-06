@@ -14,12 +14,13 @@ export class AppController {
   }
 
   //2.-
-  //recibira por body los parametros {name,birthday}
+  //params in bosy {name, birthdate}
   @Post('/postRindegastinoCumple')
   safeBirthDay(@Body() r:RindegastinoBirthDay){
     return this.appService.safeRindegastinoBirthday(r);
   }
 
+  //params in url birthdate
   @Get('/getDaysUntilMyBirthday')
   getDaysUntilBirthday(@Query(new ValidationPipe({ transform: true })) birthdate: ValidDate){
     return this.appService.getDaytoBirthday(birthdate);
@@ -27,6 +28,6 @@ export class AppController {
 
   @Get('/getRindegastinosBirthdays')
   getRindegastinosBirthdays(){
-    return this.getRindegastinosBirthdays();
+    return this.appService.getAllRindegastinosDays();
   }
 }
