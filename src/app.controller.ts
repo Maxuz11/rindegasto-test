@@ -1,31 +1,32 @@
-import { BadRequestException, Controller, Get, Post, Req } from '@nestjs/common';
-import { AppService, convertionParams } from './app.service';
-import { Request } from 'express';
-import { plainToInstance } from 'class-transformer';
+import { Body, Controller, Get, Post, Query, ValidationPipe } from '@nestjs/common';
+import { AppService } from './app.service';
 import { Convert } from './model/Convert';
-import { validate } from 'class-validator';
+import { RindegastinoBirthDay, ValidDate } from './model/RindegastinoBirthDay';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  //1.-
   @Get('/getConvertedAmount')
-  async convertTodolars(@Req() request: Request): Promise<string>{
-    const {from, to, amount} = request.query;
-    const body: convertionParams = {
-      from: from?.toString(),
-      to: to?.toString(),
-      amount: amount?.toString()
-    }
+  async convertTodolars(@Query(new ValidationPipe({ transform: true })) data: Convert): Promise<string>{
+    return await this.appService.converTo(data);
+  }
 
-    /** Valid the params in the url */
-    const ConvertDto = plainToInstance(Convert, body);
-    const errors = await validate(ConvertDto);
-    if(errors.length > 0){
-      const message = errors.map( e => Object.values(e.constraints)).flat();
-      throw new BadRequestException(message);
-    }
+  //2.-
+  //recibira por body los parametros {name,birthday}
+  @Post('/postRindegastinoCumple')
+  safeBirthDay(@Body() r:RindegastinoBirthDay){
+    return this.appService.safeRindegastinoBirthday(r);
+  }
 
-    return await this.appService.converTo(body);
+  @Get('/getDaysUntilMyBirthday')
+  getDaysUntilBirthday(@Query(new ValidationPipe({ transform: true })) birthdate: ValidDate){
+    return this.appService.getDaytoBirthday(birthdate);
+  }
+
+  @Get('/getRindegastinosBirthdays')
+  getRindegastinosBirthdays(){
+    return this.getRindegastinosBirthdays();
   }
 }

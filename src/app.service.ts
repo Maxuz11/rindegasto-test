@@ -1,7 +1,11 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { enviromentVariables } from './config';
 import { firstValueFrom } from 'rxjs';
+import { RindegastinoBirthDay, ValidDate } from './model/RindegastinoBirthDay';
+import { DbService } from 'db.service';
+import 'dayjs/locale/es';
+import * as dayjs from 'dayjs';
 
 export interface convertionParams {
   from: string;
@@ -13,7 +17,8 @@ export interface convertionParams {
 export class AppService {
 
   constructor(
-    private readonly httpService: HttpService
+    private readonly httpService: HttpService,
+    private readonly dbservice: DbService
   ){}
 
   async converTo(body: convertionParams): Promise<string> {
@@ -34,5 +39,40 @@ export class AppService {
     } catch (error) {
       return 'Error al realizar la peticion';
     }
+  }
+
+  safeRindegastinoBirthday(rindegastino: RindegastinoBirthDay){
+    const safe = this.dbservice.addRindegastino(rindegastino);
+    if(!safe){
+      return 'Error en la insercion de datos';
+    }
+    return 'Rindegastino Insertado';
+  }
+
+  getDaytoBirthday(date: ValidDate) {
+    dayjs.locale('es');
+    const now = dayjs();
+
+    /** parse birthday manualy */
+    const parts = date.birthdate.split('-');
+    const birthdayToDayJs = dayjs(new Date(+parts[2], +parts[1] - 1, +parts[0]));
+
+    let birthdayThisYear = birthdayToDayJs.year(now.year());
+
+    /** check if the birthday was before today and add a year to calculate */
+    if (birthdayThisYear.isBefore(now, 'day')) {
+      birthdayThisYear = birthdayThisYear.add(1, 'year');
+    }
+    return this.daysUntilBirthday(now, birthdayThisYear);
+  }
+
+  getAllRindegastinosDays(){
+    const data = this.dbservice.getAll();
+    console.log(data);
+  }
+
+  private daysUntilBirthday(dateFrom, dateTo): string{
+    const days = dateTo.diff(dateFrom, 'day');
+    return `Faltan ${days} dias para tu rindegastoCumpleaños`;
   }
 }
