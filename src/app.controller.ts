@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query, ValidationPipe } from '@nestjs/comm
 import { AppService } from './app.service';
 import { Convert } from './model/Convert';
 import { RindegastinoBirthDay, ValidDate } from './model/RindegastinoBirthDay';
+import { CrazyNumbers } from './model/CrazyNumbers';
 
 @Controller()
 export class AppController {
@@ -29,5 +30,12 @@ export class AppController {
   @Get('/getRindegastinosBirthdays')
   getRindegastinosBirthdays(){
     return this.appService.getAllRindegastinosDays();
+  }
+
+  //3.-
+  //params in url first,second
+  @Get('/getTheNumber')
+  getTheNumber(@Query(new ValidationPipe({ transform: true })) data: CrazyNumbers){
+    return this.appService.concatCrazyNumbersPlus(data);
   }
 }

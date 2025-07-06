@@ -6,6 +6,7 @@ import { RindegastinoBirthDay, ValidDate } from './model/RindegastinoBirthDay';
 import { DbService } from 'db.service';
 import 'dayjs/locale/es';
 import * as dayjs from 'dayjs';
+import { CrazyNumbers } from './model/CrazyNumbers';
 
 export interface convertionParams {
   from: string;
@@ -79,5 +80,15 @@ export class AppService {
       return {...a,days}
     });
     return list;
+  }
+
+  concatCrazyNumbersPlus(numbers: CrazyNumbers): string{
+    let f = Number.parseInt(numbers.first);
+    let s = Number.parseInt(numbers.second);
+    let concat = '';
+    for(let i = 1; i <= s; i++){
+      concat+=((f*i).toString());
+    }
+     return concat.slice(0, 9);
   }
 }
