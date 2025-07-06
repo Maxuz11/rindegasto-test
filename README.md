@@ -10,7 +10,7 @@
     API_ID_EXCHANGE="YOUR_ID"
 
 - npm
-- node
+- node v22.17.0
 
 # url de las peticiones
 1.
